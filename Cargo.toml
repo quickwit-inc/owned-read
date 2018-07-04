@@ -1,0 +1,17 @@
+[package]
+name = "owned-read"
+version = "0.1.0"
+authors = ["Paul Masurel <paul.masurel@gmail.com>"]
+license = "MIT"
+categories = []
+description = """Wraps your `Deref<Target=[u8]>` into a `io::Read`."""
+homepage = "https://github.com/tantivy-search/owned-read"
+repository = "https://github.com/tantivy-search/owned-read"
+readme = "README.md"
+keywords = []
+
+
+[dependencies]
+rental = "0.5"
+stable_deref_trait = "1"
+
