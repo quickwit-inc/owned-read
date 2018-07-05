@@ -3,14 +3,15 @@ extern crate rental;
 extern crate stable_deref_trait;
 
 use std::ops::Deref;
-use stable_deref_trait::StableDeref;
+use stable_deref_trait::{CloneStableDeref, StableDeref};
 use std::io;
+use std::sync::Arc;
 
 rental! {
     mod rental_impl {
         use ::BoxStableDeref;
 
-        #[rental(deref_suffix)]
+        #[rental(clone, deref_suffix)]
         pub(crate) struct OwnedReader {
             head: BoxStableDeref,
             data: & 'head [u8],
@@ -18,15 +19,17 @@ rental! {
     }
 }
 
-struct BoxStableDeref(Box<Deref<Target=[u8]>>);
+#[derive(Clone)]
+struct BoxStableDeref(Arc<Box<Deref<Target=[u8]>>>);
 
 impl BoxStableDeref {
     fn new<T: Deref<Target=[u8]> + StableDeref + 'static>(inner: T) -> BoxStableDeref {
-        BoxStableDeref(Box::new(inner))
+        BoxStableDeref(Arc::new(Box::new(inner)))
     }
 }
 
 unsafe impl StableDeref for BoxStableDeref {}
+unsafe impl CloneStableDeref for BoxStableDeref {}
 
 impl Deref for BoxStableDeref {
     type Target = [u8];
@@ -36,6 +39,7 @@ impl Deref for BoxStableDeref {
     }
 }
 
+#[derive(Clone)]
 pub struct OwnedRead {
     inner: rental_impl::OwnedReader
 }
