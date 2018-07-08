@@ -58,6 +58,10 @@ impl OwnedRead {
         self.inner.deref()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.as_slice().is_empty()
+    }
+
     pub fn advance(&mut self, advance_len: usize) {
         rental_impl::OwnedReader::rent_mut(&mut self.inner, |arr| *arr = &arr[advance_len..]);
     }
@@ -69,6 +73,8 @@ impl OwnedRead {
     pub fn get(&self, idx: usize) -> u8 {
         self.as_slice()[idx]
     }
+
+
 }
 
 impl io::Read for OwnedRead {
