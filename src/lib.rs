@@ -62,6 +62,10 @@ impl OwnedRead {
         self.as_slice().is_empty()
     }
 
+    pub fn clip(&mut self, clip_len: usize) {
+        rental_impl::OwnedReader::rent_mut(&mut self.inner, |arr| *arr = &arr[..clip_len]);
+    }
+
     pub fn advance(&mut self, advance_len: usize) {
         rental_impl::OwnedReader::rent_mut(&mut self.inner, |arr| *arr = &arr[advance_len..]);
     }
