@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate rental;
-extern crate stable_deref_trait;
 
 use stable_deref_trait::{CloneStableDeref, StableDeref};
 use std::io;
@@ -20,7 +19,7 @@ rental! {
 }
 
 #[derive(Clone)]
-struct BoxStableDeref(Arc<Deref<Target = [u8]>>);
+struct BoxStableDeref(Arc<dyn Deref<Target = [u8]>>);
 
 impl BoxStableDeref {
     fn new<T: Deref<Target = [u8]> + StableDeref + 'static>(inner: T) -> BoxStableDeref {
@@ -106,14 +105,13 @@ impl io::Read for OwnedRead {
 
     fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
         let read_len = self.read(buf)?;
-        if read_len == buf.len() {
-            Ok(())
-        } else {
-            Err(io::Error::new(
+        if read_len != buf.len() {
+            return Err(io::Error::new(
                 io::ErrorKind::UnexpectedEof,
                 "failed to fill whole buffer",
-            ))
+            ));
         }
+        Ok(())
     }
 }
 

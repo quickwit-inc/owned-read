@@ -9,7 +9,7 @@ homepage = "https://github.com/tantivy-search/owned-read"
 repository = "https://github.com/tantivy-search/owned-read"
 readme = "README.md"
 keywords = []
-
+edition = "2018"
 
 [dependencies]
 rental = "0.5"
