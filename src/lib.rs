@@ -2,9 +2,9 @@
 extern crate rental;
 extern crate stable_deref_trait;
 
-use std::ops::Deref;
 use stable_deref_trait::{CloneStableDeref, StableDeref};
 use std::io;
+use std::ops::Deref;
 use std::sync::Arc;
 
 rental! {
@@ -20,11 +20,11 @@ rental! {
 }
 
 #[derive(Clone)]
-struct BoxStableDeref(Arc<Box<Deref<Target=[u8]>>>);
+struct BoxStableDeref(Arc<Deref<Target = [u8]>>);
 
 impl BoxStableDeref {
-    fn new<T: Deref<Target=[u8]> + StableDeref + 'static>(inner: T) -> BoxStableDeref {
-        BoxStableDeref(Arc::new(Box::new(inner)))
+    fn new<T: Deref<Target = [u8]> + StableDeref + 'static>(inner: T) -> BoxStableDeref {
+        BoxStableDeref(Arc::new(inner))
     }
 }
 
@@ -35,23 +35,20 @@ impl Deref for BoxStableDeref {
     type Target = [u8];
 
     fn deref(&self) -> &[u8] {
-        self.0.deref().deref()
+        self.0.deref()
     }
 }
 
 #[derive(Clone)]
 pub struct OwnedRead {
-    inner: rental_impl::OwnedReader
+    inner: rental_impl::OwnedReader,
 }
 
 impl OwnedRead {
-    pub fn new<T: StableDeref + Deref<Target=[u8]> + 'static>(data: T) -> OwnedRead {
+    pub fn new<T: StableDeref + Deref<Target = [u8]> + 'static>(data: T) -> OwnedRead {
         let box_stable_deref = BoxStableDeref::new(data);
         let inner = rental_impl::OwnedReader::new(box_stable_deref, |arr| arr);
-        OwnedRead {
-            inner
-        }
-
+        OwnedRead { inner }
     }
 
     fn as_slice(&self) -> &[u8] {
@@ -77,8 +74,6 @@ impl OwnedRead {
     pub fn get(&self, idx: usize) -> u8 {
         self.as_slice()[idx]
     }
-
-
 }
 
 impl io::Read for OwnedRead {
@@ -114,7 +109,10 @@ impl io::Read for OwnedRead {
         if read_len == buf.len() {
             Ok(())
         } else {
-            Err(io::Error::new(io::ErrorKind::UnexpectedEof, "failed to fill whole buffer"))
+            Err(io::Error::new(
+                io::ErrorKind::UnexpectedEof,
+                "failed to fill whole buffer",
+            ))
         }
     }
 }
@@ -124,7 +122,6 @@ impl AsRef<[u8]> for OwnedRead {
         self.as_slice()
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -137,7 +134,9 @@ mod tests {
         let mut buffer = vec![0u8; 5];
         assert!(source_reader.read_exact(&mut buffer).is_ok());
         assert_eq!(buffer, &[0u8, 1u8, 2u8, 3u8, 4u8]);
+
+        let mut cloned_reader = source_reader.clone();
+        assert!(cloned_reader.read_exact(&mut buffer).is_ok());
+        assert_eq!(buffer, &[5u8, 6u8, 7u8, 8u8, 9u8]);
     }
 }
-
-
