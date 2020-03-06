@@ -12,6 +12,5 @@ keywords = []
 edition = "2018"
 
 [dependencies]
-rental = "0.5"
 stable_deref_trait = "1"
 
