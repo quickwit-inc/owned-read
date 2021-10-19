@@ -5,8 +5,8 @@ authors = ["Paul Masurel <paul.masurel@gmail.com>"]
 license = "MIT"
 categories = []
 description = """Wraps your `Deref<Target=[u8]>` into a `io::Read`."""
-homepage = "https://github.com/tantivy-search/owned-read"
-repository = "https://github.com/tantivy-search/owned-read"
+homepage = "https://github.com/quickwit-inc/owned-read"
+repository = "https://github.com/quickwit-inc/owned-read"
 readme = "README.md"
 keywords = []
 edition = "2018"
